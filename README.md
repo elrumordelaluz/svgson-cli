@@ -9,3 +9,13 @@
 <p align="center">
   CLI version of <a href="https://github.com/elrumordelaluz/svgson-next">svgson</a>
 </p>
+
+### How to use
+
+```
+> npm i -g svgson-cli
+```
+
+```
+> svgson [input] <options>
+```
