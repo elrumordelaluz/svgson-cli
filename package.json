@@ -6,7 +6,7 @@
   "author": "Lionel T <elrumordelaluz@hotmail.com> (https://elrumordelaluz.com/)",
   "license": "MIT",
   "bin": {
-    "outline-stroke": "cli.js"
+    "svgson": "cli.js"
   },
   "engines": {
     "node": ">=8"
