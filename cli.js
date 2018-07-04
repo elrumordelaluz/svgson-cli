@@ -14,11 +14,13 @@ const stat = promisify(fs.stat)
 const cli = meow(
   `
 	Usage
-    $ svgson <input.svg>
+    $ svgson [input] <options>
     
   Options
 	  --output, -o  Output file
 	  --pretty, -p  Pretty Output 
+	  --separated, -s  Output separated files 
+	  --camelcase, -c  Camelcase attributes names 
 
 	Examples
 	  $ svgson icon.svg
@@ -39,6 +41,10 @@ const cli = meow(
         type: 'boolean',
         alias: 's',
       },
+      camelcase: {
+        type: 'boolean',
+        alias: 'c',
+      },
     },
   }
 )
@@ -51,11 +57,12 @@ const checkDirectory = async input => {
 const init = async () => {
   const {
     input: [cliInput],
-    flags: { output, pretty, separated },
+    flags: { output, pretty, separated, camelcase },
   } = cli
 
   let inputStr = ''
   const isDirectory = await checkDirectory(cliInput)
+  const parseWithSvgson = input => svgson(input, { camelcase })
 
   if (isDirectory) {
     const files = await readdir(cliInput)
@@ -63,10 +70,13 @@ const init = async () => {
       for (const file of files) {
         const _file = await readFile(resolve(cliInput, file))
         if (isSvg(_file)) {
-          const parsed = await svgson(_file.toString())
+          const parsed = await parseWithSvgson(_file.toString())
           if (separated) {
             await writeFile(
-              `${output || 'svgson'}_${file.replace('.svg', '')}.json`,
+              `${output ? output.replace('.json', '') : 'out'}_${file.replace(
+                '.svg',
+                ''
+              )}.json`,
               JSON.stringify(parsed, null, pretty ? 4 : null),
               'utf8'
             )
@@ -76,9 +86,9 @@ const init = async () => {
       }
 
       if (!separated) {
-        const parsed = await svgson(inputStr)
+        const parsed = await parseWithSvgson(inputStr)
         await writeFile(
-          cli.flags.output || 'svgson.json',
+          cli.flags.output || 'out.json',
           JSON.stringify(parsed, null, pretty ? 4 : null),
           'utf8'
         )
@@ -87,9 +97,9 @@ const init = async () => {
   } else {
     const file = await readFile(cliInput)
     if (isSvg(file)) {
-      const parsed = await svgson(file.toString())
+      const parsed = await parseWithSvgson(file.toString())
       await writeFile(
-        output || 'svgson.json',
+        output || 'out.json',
         JSON.stringify(parsed, null, pretty ? 4 : null),
         'utf8'
       )
