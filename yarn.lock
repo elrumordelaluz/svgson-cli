@@ -74,6 +74,10 @@ find-up@^2.0.0:
   dependencies:
     locate-path "^2.0.0"
 
+get-stdin@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/get-stdin/-/get-stdin-6.0.0.tgz#9e09bf712b360ab9225e812048f71fde9c89657b"
+
 get-value@^2.0.3:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
@@ -345,9 +349,9 @@ strip-indent@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/strip-indent/-/strip-indent-2.0.0.tgz#5ef8db295d01e6ed6cbf7aab96998d7822527b68"
 
-svgson-next@4.1.5:
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/svgson-next/-/svgson-next-4.1.5.tgz#7eb43d2c98dbe46ee21497165d7ae986c2125be0"
+svgson-next@4.1.6:
+  version "4.1.6"
+  resolved "https://registry.yarnpkg.com/svgson-next/-/svgson-next-4.1.6.tgz#2729674e14e43ddf4c550fecccf1837bcacd8055"
   dependencies:
     clean-deep "3.0.2"
     deep-rename-keys "^0.2.1"

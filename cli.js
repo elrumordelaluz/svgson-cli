@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 'use strict'
-const meow = require('meow')
-const { default: svgson } = require('svgson-next')
-const isSvg = require('is-svg')
 const fs = require('fs')
+const svgson = require('svgson-next').default
+const meow = require('meow')
+const isSvg = require('is-svg')
+const getStdin = require('get-stdin')
 const { resolve } = require('path')
 const { promisify } = require('util')
 const readFile = promisify(fs.readFile)
@@ -61,49 +62,58 @@ const init = async () => {
   } = cli
 
   let inputStr = ''
-  const isDirectory = await checkDirectory(cliInput)
+
+  const stdin = await getStdin()
   const parseWithSvgson = input => svgson(input, { camelcase })
 
-  if (isDirectory) {
-    const files = await readdir(cliInput)
-    if (files.length) {
-      for (const file of files) {
-        const _file = await readFile(resolve(cliInput, file))
-        if (isSvg(_file)) {
-          const parsed = await parseWithSvgson(_file.toString())
+  const checkAndParse = async input => {
+    if (isSvg(input)) {
+      return await parseWithSvgson(input)
+    }
+    throw 'Invalid SVG'
+  }
+
+  const outputData = async (data, name = null) => {
+    const str = JSON.stringify(data, null, pretty ? 4 : null)
+    return output
+      ? await writeFile(
+          `${output.replace('.json', '')}${name ? `_${name}` : ''}.json`,
+          str,
+          'utf8'
+        )
+      : console.log(str)
+  }
+
+  try {
+    if (stdin !== '') {
+      const parsed = await checkAndParse(stdin)
+      return await outputData(parsed)
+    }
+
+    const isDirectory = await checkDirectory(cliInput)
+    if (isDirectory) {
+      const files = await readdir(cliInput)
+      if (files.length) {
+        for (const file of files) {
+          const _file = await readFile(resolve(cliInput, file))
+          const parsed = await checkAndParse(_file.toString())
           if (separated) {
-            await writeFile(
-              `${output ? output.replace('.json', '') : 'out'}_${file.replace(
-                '.svg',
-                ''
-              )}.json`,
-              JSON.stringify(parsed, null, pretty ? 4 : null),
-              'utf8'
-            )
+            outputData(parsed, file.replace('.svg', ''))
           }
           inputStr = `${inputStr}${_file.toString()}`
         }
+        if (!separated) {
+          const parsed = await parseWithSvgson(inputStr)
+          outputData(parsed)
+        }
       }
-
-      if (!separated) {
-        const parsed = await parseWithSvgson(inputStr)
-        await writeFile(
-          cli.flags.output || 'out.json',
-          JSON.stringify(parsed, null, pretty ? 4 : null),
-          'utf8'
-        )
-      }
+    } else {
+      const file = await readFile(cliInput)
+      const parsed = await checkAndParse(file.toString())
+      return outputData(parsed)
     }
-  } else {
-    const file = await readFile(cliInput)
-    if (isSvg(file)) {
-      const parsed = await parseWithSvgson(file.toString())
-      await writeFile(
-        output || 'out.json',
-        JSON.stringify(parsed, null, pretty ? 4 : null),
-        'utf8'
-      )
-    }
+  } catch (err) {
+    throw err
   }
 }
 
