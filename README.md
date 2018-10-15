@@ -30,7 +30,7 @@ svgson icon.svg --output icon.json
 
 #### input
 
-File or folder with `.svg` files
+If specified `file` or `folder` with `.svg` files, otherwise `stdin`
 
 #### options
 
@@ -39,7 +39,7 @@ File or folder with `.svg` files
 Output filename
 
 Type: `string`<br>
-Default: `out.json`
+Default: `stdout`
 Alias: `o`<br>
 
 ##### pretty
@@ -66,6 +66,12 @@ Camelcase attributes names
 Type: `boolean`<br>
 Default: `false`
 Alias: `c`<br>
+
+### Example using [svgo](https://github.com/svg/svgo)
+
+```
+svgo --input=svgs/icon-1.svg --output=- | svgson --pretty > icon-1.json
+```
 
 ## Related
 
