@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict'
 const fs = require('fs')
-const svgson = require('svgson-next').default
+const svgson = require('svgson').default
 const meow = require('meow')
 const isSvg = require('is-svg')
 const getStdin = require('get-stdin')

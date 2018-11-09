@@ -18,6 +18,6 @@
     "get-stdin": "6.0.0",
     "is-svg": "3.0.0",
     "meow": "5.0.0",
-    "svgson-next": "4.1.6"
+    "svgson": "3.0.0"
   }
 }
