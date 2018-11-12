@@ -7,7 +7,7 @@
 </h5>
 
 <p align="center">
-  CLI version of <a href="https://github.com/elrumordelaluz/svgson-next">svgson</a>
+  CLI version of <a href="https://github.com/elrumordelaluz/svgson">svgson</a>
 </p>
 
 ## Install
