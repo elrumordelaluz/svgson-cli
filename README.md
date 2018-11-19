@@ -75,7 +75,7 @@ svgo --input=svgs/icon-1.svg --output=- | svgson --pretty > icon-1.json
 
 ## Related
 
-[svgson](https://github.com/elrumordelaluz/svgson-next) Transform SVG into `Object`
+[svgson](https://github.com/elrumordelaluz/svgson) Transform SVG into `Object`
 
 [element-to-path](https://github.com/elrumordelaluz/element-to-path) Convert SVG element into `path`
 
