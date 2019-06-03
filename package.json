@@ -15,9 +15,9 @@
     "cli.js"
   ],
   "dependencies": {
-    "get-stdin": "6.0.0",
-    "is-svg": "3.0.0",
+    "get-stdin": "7.0.0",
+    "is-svg": "4.2.0",
     "meow": "5.0.0",
-    "svgson": "3.0.0"
+    "svgson": "3.1.0"
   }
 }

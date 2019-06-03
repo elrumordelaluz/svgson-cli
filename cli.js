@@ -50,44 +50,53 @@ const cli = meow(
   }
 )
 
-const checkDirectory = async input => {
+async function checkDirectory(input) {
   const _ = await stat(input)
   return _.isDirectory()
 }
 
-const init = async () => {
+async function parseWithSvgson(input, options) {
+  return await svgson(input, options)
+}
+
+async function checkAndParse(input, options) {
+  if (isSvg(input)) {
+    return await parseWithSvgson(input, options)
+  }
+  throw 'Invalid SVG'
+}
+
+async function outputData(data, { name = null, output, pretty }) {
+  const str = JSON.stringify(data, null, pretty ? 4 : null)
+  return output
+    ? await writeFile(
+        `${output.replace('.json', '')}${name ? `_${name}` : ''}.json`,
+        str,
+        'utf8'
+      )
+    : console.log(str)
+}
+
+async function init() {
   const {
     input: [cliInput],
     flags: { output, pretty, separated, camelcase },
   } = cli
 
+  if (cli.flags.h) cli.showHelp()
+
   let inputStr = ''
-
   const stdin = await getStdin()
-  const parseWithSvgson = input => svgson(input, { camelcase })
-
-  const checkAndParse = async input => {
-    if (isSvg(input)) {
-      return await parseWithSvgson(input)
-    }
-    throw 'Invalid SVG'
-  }
-
-  const outputData = async (data, name = null) => {
-    const str = JSON.stringify(data, null, pretty ? 4 : null)
-    return output
-      ? await writeFile(
-          `${output.replace('.json', '')}${name ? `_${name}` : ''}.json`,
-          str,
-          'utf8'
-        )
-      : console.log(str)
-  }
 
   try {
     if (stdin !== '') {
-      const parsed = await checkAndParse(stdin)
-      return await outputData(parsed)
+      const parsed = await checkAndParse(stdin, { camelcase })
+      return await outputData(parsed, { output, pretty })
+    }
+
+    if (isSvg(cliInput)) {
+      const parsed = await parseWithSvgson(cliInput, { camelcase })
+      return outputData(parsed, { output, pretty })
     }
 
     const isDirectory = await checkDirectory(cliInput)
@@ -96,21 +105,25 @@ const init = async () => {
       if (files.length) {
         for (const file of files) {
           const _file = await readFile(resolve(cliInput, file))
-          const parsed = await checkAndParse(_file.toString())
+          const parsed = await checkAndParse(_file.toString(), { camelcase })
           if (separated) {
-            outputData(parsed, file.replace('.svg', ''))
+            outputData(parsed, {
+              name: file.replace('.svg', ''),
+              output,
+              pretty,
+            })
           }
           inputStr = `${inputStr}${_file.toString()}`
         }
         if (!separated) {
-          const parsed = await parseWithSvgson(inputStr)
-          outputData(parsed)
+          const parsed = await parseWithSvgson(inputStr, { camelcase })
+          outputData(parsed, { output, pretty })
         }
       }
     } else {
       const file = await readFile(cliInput)
-      const parsed = await checkAndParse(file.toString())
-      return outputData(parsed)
+      const parsed = await checkAndParse(file.toString(), { camelcase })
+      return outputData(parsed, { output, pretty })
     }
   } catch (err) {
     throw err
