@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "get-stdin": "7.0.0",
-    "is-svg": "4.2.0",
+    "is-svg": "4.2.2",
     "meow": "5.0.0",
     "svgson": "3.1.0"
   }
